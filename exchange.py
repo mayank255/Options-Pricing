@@ -13,7 +13,12 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from numpy import random
 
-def exchange_option_mc(S1_0, S2_0, T, r, q1, q2, sigma1, sigma2, rho, Q1, Q2, n_simulations=100000):
+def exchange_option_mc(S1_0, S2_0, T, r, q1, q2, sigma1, sigma2, rho, Q1, Q2, n_simulations=100000, seed=True):
+    
+    if seed:
+        random.seed(10)
+    else:
+        pass
     
     z = np.random.randn(n_simulations, 2)
     z[:, 1] = rho*z[:, 0] + np.sqrt(1-rho**2)*z[:, 1]  # Cholesky decomposition for correlated Brownian motions
@@ -37,7 +42,7 @@ def margrabe_option(S1_0, S2_0, T, q1, q2, sigma1, sigma2, rho, Q1, Q2):
     # print(stats.norm.cdf(d1),stats.norm.cdf(d2))
     V = Q1 * S1_0 * np.exp(-q1 * T) * stats.norm.cdf(d1) - Q2 * S2_0 * np.exp(-q2 * T) * stats.norm.cdf(d2)
     return V
-def simulate_multiple_times(N_values, args,repetitions=100):
+def simulate_multiple_times(N_values, args,repetitions=100,seed=False):
     results = {'N': [], 'Mean Option Price': [], 'Std Dev Option Price': []}
 
     # Parameters (assuming some values; adjust as needed)
@@ -49,7 +54,7 @@ def simulate_multiple_times(N_values, args,repetitions=100):
         
         option_prices = []
         for rep in range(repetitions):
-            option_price= exchange_option_mc(S1_0, S2_0, T, r, q1, q2, sigma1, sigma2, rho, Q1, Q2, N)
+            option_price= exchange_option_mc(S1_0, S2_0, T, r, q1, q2, sigma1, sigma2, rho, Q1, Q2, N, seed)
             option_prices.append(option_price)
         
         mean_option_price = np.mean(option_prices)
